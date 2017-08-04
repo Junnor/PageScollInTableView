@@ -29,9 +29,13 @@ class PageViewController: UIViewController {
     
     var usePageTitle = false
     
+    /*
+ 
+     之所以 imagesName & pagesTitle 这样出来是因为图片可能通过网络加载
+     */
     var imagesName: [String] = [] {
         didSet {
-            if usePageTitle && pagesTitle.count == 0 {
+            if usePageTitle && pagesTitle.count == 0 {  // 判断是否使用标题
                 return
             }
             
@@ -52,7 +56,6 @@ class PageViewController: UIViewController {
     }
     
     // MARK: Private
-    
 
     private var pageViewController: UIPageViewController!
     fileprivate var pageController: UIPageControl!
@@ -68,9 +71,7 @@ class PageViewController: UIViewController {
     private var timer: Timer!
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        print("viewDidAppear frame: \(view.frame)")
-        
+                
         if imagesName.count > 0 {
             if !configuredPageView {
                 
@@ -82,7 +83,7 @@ class PageViewController: UIViewController {
                 view.layoutIfNeeded()
             }
             
-            
+            // 第一次调用 viewDidAppear() 的时候不执行， 通过设置图片或者标题属性初始化 timer 
             if timer != nil && useTimerAnimation {
                 DispatchQueue.main.asyncAfter(deadline: .now() + scrollAfterTime, execute: {
                     self.fireTimer()
@@ -157,11 +158,7 @@ class PageViewController: UIViewController {
     }
     
     private func setPageController() {
-        
         var frame = view.frame
-        
-        print("view.bounds: \(frame)")
-
         frame.origin.y = frame.height - 50
         frame.size.height = 50
         frame.size.width = min(CGFloat(imagesName.count * 30), frame.width)

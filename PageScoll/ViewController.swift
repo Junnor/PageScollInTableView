@@ -17,8 +17,8 @@ class ViewController: UIViewController {
             tableView.dataSource = self
             tableView.delegate = self
             
-            tableView.rowHeight = 70
-            tableView.sectionHeaderHeight = 50
+            tableView.rowHeight = 60
+            tableView.sectionHeaderHeight = 40
         }
     }
     
@@ -28,26 +28,28 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         automaticallyAdjustsScrollViewInsets = false
-    }
-    
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
         
         loadTableHeaderView()
         
         loadTableFooterView()
-        
-        showIndicatorIfNeeded()
+    }
+    
 
+    private var layoutPageView = false
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        let frame = CGRect(x: 0, y: 0, width:view.bounds.size.width, height: 200)
         
-        tableView.tableHeaderView?.frame = frame
-        
-        print("dsfsf frame: \(frame)")
-
+        if !layoutPageView {
+            layoutPageView = true
+            
+            var frame = view.bounds
+            frame.size.height = 200
+            headerViewController.view.frame = frame
+            tableView.tableHeaderView = headerViewController.view
+            
+            showIndicatorIfNeeded()
+        }
         
         if self.headerViewController.imagesName.count == 0 {
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
@@ -67,21 +69,11 @@ class ViewController: UIViewController {
                                                        showTitle: true)
         headerViewController.delegate = self
 
-//        headerViewController.imagesName = ["0", "1", "2"]
-//        headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
-//        
+        headerViewController.imagesName = ["0", "1", "2"]
+        headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
+        
         addChildViewController(headerViewController)
         
-        
-        let frame = UIScreen.main.bounds
-        print("view .......frame: \(frame) ")
-        
-        
-        let bounds = CGRect(x: 0, y: 0, width: frame.width, height: 200)
-        
-        headerViewController.view.frame = bounds
-        tableView.tableHeaderView = headerViewController.view
-
         headerViewController.didMove(toParentViewController: self)
     }
     
@@ -120,7 +112,7 @@ extension ViewController: PageContainerControllerDelegate {
     func pageContainerController(_ controller: PageContainerController, didSelectedAt page: Int) {
         let vc = UIViewController()
         vc.view.backgroundColor = UIColor.white
-        vc.title = "\(page)"
+        vc.title = "Page \(page)"
         self.navigationController?.pushViewController(vc, animated: true)
     }
     

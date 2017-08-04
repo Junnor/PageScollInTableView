@@ -20,13 +20,11 @@ class PageContainerController: UIViewController {
      showTitle: 是否显示标题
      */
     init(useTimer: Bool, recursive: Bool, showTitle: Bool) {
-//        super.init(nibName: nil, bundle: nil)
+        super.init(nibName: nil, bundle: nil)
         
         self.useTimerAnimation = useTimer
         self.allowedRecursive = recursive
         self.usePageTitle = showTitle
-        
-        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -95,8 +93,6 @@ class PageContainerController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("cccccc viewDidLoad frame: \(view.frame)")
-        
         automaticallyAdjustsScrollViewInsets = false
         
         pageViewController = PageViewController()
@@ -108,17 +104,22 @@ class PageContainerController: UIViewController {
         pageViewController.didMove(toParentViewController: self)
     }
     
+    
+    private var showedView = false
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        print("cccccc viewDidAppear frame: \(view.frame)")
-
-        pageViewController?.allowedRecursive = self.allowedRecursive
-        pageViewController?.hidePageController = self.hidePageController
-        pageViewController?.useTimerAnimation = self.useTimerAnimation
-        pageViewController?.usePageTitle = usePageTitle
-
-        pageViewController?.imagesName = self.imagesName
-        pageViewController?.pagesTitle = self.pagesTitle
+        
+        if !showedView {
+            showedView = true
+            
+            pageViewController?.allowedRecursive = self.allowedRecursive
+            pageViewController?.hidePageController = self.hidePageController
+            pageViewController?.useTimerAnimation = self.useTimerAnimation
+            pageViewController?.usePageTitle = usePageTitle
+            
+            pageViewController?.imagesName = self.imagesName
+            pageViewController?.pagesTitle = self.pagesTitle
+        }
     }
     
 }
