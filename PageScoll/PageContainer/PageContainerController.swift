@@ -20,11 +20,13 @@ class PageContainerController: UIViewController {
      showTitle: 是否显示标题
      */
     init(useTimer: Bool, recursive: Bool, showTitle: Bool) {
-        super.init(nibName: nil, bundle: nil)
+//        super.init(nibName: nil, bundle: nil)
         
         self.useTimerAnimation = useTimer
         self.allowedRecursive = recursive
         self.usePageTitle = showTitle
+        
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -94,6 +96,8 @@ class PageContainerController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         print("cccccc viewDidLoad frame: \(view.frame)")
+        
+        automaticallyAdjustsScrollViewInsets = false
         
         pageViewController = PageViewController()
         pageViewController.delegate = self

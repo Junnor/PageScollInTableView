@@ -28,17 +28,19 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         automaticallyAdjustsScrollViewInsets = false
+    }
+    
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
         
         loadTableHeaderView()
         
         loadTableFooterView()
         
         showIndicatorIfNeeded()
-    }
-    
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         
         let frame = CGRect(x: 0, y: 0, width:view.bounds.size.width, height: 200)
         
