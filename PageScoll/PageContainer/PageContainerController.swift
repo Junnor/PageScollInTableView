@@ -14,32 +14,56 @@ protocol PageContainerControllerDelegate: class {
 
 class PageContainerController: UIViewController {
     
+    init(useTimerAnimation: Bool, allowedRecursive: Bool) {
+        super.init(nibName: nil, bundle: nil)
+        
+        self.useTimerAnimation = useTimerAnimation
+        self.allowedRecursive = allowedRecursive
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Public
-    var allowedRecursive = true {
-        didSet {
-            pageViewController?.allowedRecursive = allowedRecursive
-        }
-    }
-    var useTimerAnimation = true {
-        didSet {
-            pageViewController?.useTimerAnimation = useTimerAnimation
-        }
-    }
 
     var hidePageController = false {
         didSet {
             pageViewController?.hidePageController = hidePageController
         }
     }
+    
+    var usePageTitle = false {
+        didSet {
+            pageViewController?.usePageTitle = usePageTitle
+        }
+    }
 
-
-    var imagesName: [String] = []
-    var pagesTitle: [String] = []
+    var imagesName: [String] = [] {
+        didSet {
+            pageViewController?.imagesName = imagesName
+        }
+    }
+    var pagesTitle: [String] = [] {
+        didSet {
+            pageViewController?.pagesTitle = pagesTitle
+        }
+    }
     
     weak var delegate: PageContainerControllerDelegate?
 
     // MARK: Private
+    
+    private var allowedRecursive = true {
+        didSet {
+            pageViewController?.allowedRecursive = allowedRecursive
+        }
+    }
+    private var useTimerAnimation = true {
+        didSet {
+            pageViewController?.useTimerAnimation = useTimerAnimation
+        }
+    }
     
     private var pageViewController: PageViewController!
 
@@ -62,8 +86,10 @@ class PageContainerController: UIViewController {
         pageViewController?.allowedRecursive = self.allowedRecursive
         pageViewController?.hidePageController = self.hidePageController
         pageViewController?.useTimerAnimation = self.useTimerAnimation
-        
-        pageViewController?.setData((imagesName, pagesTitle))
+        pageViewController?.usePageTitle = usePageTitle
+
+        pageViewController?.imagesName = self.imagesName
+        pageViewController?.pagesTitle = self.pagesTitle
     }
     
 }

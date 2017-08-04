@@ -19,19 +19,35 @@ class PageViewController: UIViewController {
 
     var allowedRecursive = true
     var useTimerAnimation = true
+    
     var hidePageController = false
-
-    func setData(_ data: (imagesName: [String], pagesTitle: [String])) {
-        
-        self.imagesName = data.imagesName
-        self.pagesTitle = data.pagesTitle
+    var usePageTitle = false
+    
+    var imagesName: [String] = [] {
+        didSet {
+            if usePageTitle && pagesTitle.count == 0 {
+                return
+            }
+            
+            if imagesName.count > 0 && !configuredPageView {
+                print("initializerPageControlerAndPageView with imagesName")
+                initializerPageControlerAndPageView()
+            }
+        }
+    }
+    
+    var pagesTitle: [String] = [] {
+        didSet {
+            if pagesTitle.count > 0 && imagesName.count > 0 && !configuredPageView {
+                print("initializerPageControlerAndPageView with pagesTitle")
+                initializerPageControlerAndPageView()
+            }
+        }
     }
     
     // MARK: Private
     
-    fileprivate var imagesName: [String] = []
-    fileprivate var pagesTitle: [String] = []
-    
+
     private var pageViewController: UIPageViewController!
     fileprivate var pageController: UIPageControl!
     
@@ -40,22 +56,23 @@ class PageViewController: UIViewController {
     fileprivate var numberOfPage = 0
         
     // MARK: - View controller lifecycle    
-    private var addedSubView = false
+    private var configuredPageView = false
     private var timer: Timer!
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         if imagesName.count > 0 {
-            if !addedSubView {
+            if !configuredPageView {
                 
-                addedSubView = true
+                configuredPageView = true
                 
                 setPageViewController()
                 setPageController()
             }
             
             
-            if useTimerAnimation {
+            if timer != nil && useTimerAnimation {
+                print("fire with viewDidAppear")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
                     self.fireTimer()
                 })
@@ -74,6 +91,20 @@ class PageViewController: UIViewController {
 
     
     // MARK: Helper
+    
+    private func initializerPageControlerAndPageView() {
+        configuredPageView = true
+        
+        setPageViewController()
+        setPageController()
+
+        print("fire with property")
+        if useTimerAnimation {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
+                self.fireTimer()
+            })
+        }
+    }
     
     private func fireTimer() {
         timer?.invalidate()   // add it
@@ -176,7 +207,10 @@ class PageViewController: UIViewController {
         
         contentViewControllr.pageIndex = index
         contentViewControllr.imageFile = imagesName[index]
-        contentViewControllr.pageTitle = pagesTitle[index]
+        
+        if usePageTitle {   // may not using page title
+            contentViewControllr.pageTitle = pagesTitle[index]
+        }
         
         return contentViewControllr
     }

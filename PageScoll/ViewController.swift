@@ -32,22 +32,21 @@ class ViewController: UIViewController {
     }
     
     private func configureContainerViewController() {
-        headerViewController = PageContainerController()
+        headerViewController = PageContainerController(useTimerAnimation: false, allowedRecursive: false)
+        
         headerViewController.imagesName = ["0", "1", "2"]
         headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
         
-        headerViewController.delegate = self
-        
+        headerViewController.delegate = self        
         
         addChildViewController(headerViewController)
-        
+                
         var frame = UIScreen.main.bounds
         frame.origin.y = 0
         frame.size.height = 200
         headerViewController.view.frame = frame
         
         tableView.tableHeaderView = headerViewController.view
-        
         
         let footerView = UIView()
         frame.size.height = 100
@@ -61,6 +60,35 @@ class ViewController: UIViewController {
         tableView.tableFooterView = footerView
 
         headerViewController.didMove(toParentViewController: self)
+        
+        showIndicatorIfNeeded()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 7.0) {
+//            
+//            print("perfrom long long ago")
+//            
+//            self.headerViewController.imagesName = ["0", "1", "2"]
+//            self.headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
+//            
+//            self.indicator?.stopAnimating()
+//        }
+    }
+    
+    
+    private var indicator: UIActivityIndicatorView!
+    private func showIndicatorIfNeeded() {
+        if headerViewController.imagesName.count == 0 {
+            indicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+            indicator.center = tableView.tableHeaderView!.center
+            tableView.tableHeaderView?.addSubview(indicator)
+            tableView.tableHeaderView?.addSubview(indicator)
+            
+            indicator.startAnimating()
+        }
     }
 
 }
