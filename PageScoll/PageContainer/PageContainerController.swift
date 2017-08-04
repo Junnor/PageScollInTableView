@@ -16,9 +16,23 @@ class PageContainerController: UIViewController {
     
     
     // MARK: - Public
-    var allowedRecursive = true
-    var useTimerAnimation = true
-    var hidePageController = false
+    var allowedRecursive = true {
+        didSet {
+            pageViewController?.allowedRecursive = allowedRecursive
+        }
+    }
+    var useTimerAnimation = true {
+        didSet {
+            pageViewController?.useTimerAnimation = useTimerAnimation
+        }
+    }
+
+    var hidePageController = false {
+        didSet {
+            pageViewController?.hidePageController = hidePageController
+        }
+    }
+
 
     var imagesName: [String] = []
     var pagesTitle: [String] = []
@@ -37,17 +51,21 @@ class PageContainerController: UIViewController {
         pageViewController = PageViewController()
         pageViewController.delegate = self
         
-        pageViewController.allowedRecursive = self.allowedRecursive
-        pageViewController.hidePageController = self.hidePageController
-        pageViewController.useTimerAnimation = self.useTimerAnimation
-        
-        pageViewController.setData((imagesName, pagesTitle))
-
         addChildViewController(pageViewController)
         view.addSubview(pageViewController.view)
         pageViewController.didMove(toParentViewController: self)
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
+        pageViewController?.allowedRecursive = self.allowedRecursive
+        pageViewController?.hidePageController = self.hidePageController
+        pageViewController?.useTimerAnimation = self.useTimerAnimation
+        
+        pageViewController?.setData((imagesName, pagesTitle))
+    }
+    
 }
 
 // MARK: - pageView delegate

@@ -45,19 +45,21 @@ class PageViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if !addedSubView {
+        if imagesName.count > 0 {
+            if !addedSubView {
+                
+                addedSubView = true
+                
+                setPageViewController()
+                setPageController()
+            }
             
-            addedSubView = true
             
-            setPageViewController()
-            setPageController()
-        }
-        
-        
-        if useTimerAnimation {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
-                self.fireTimer()
-            })
+            if useTimerAnimation {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
+                    self.fireTimer()
+                })
+            }
         }
     }
     
