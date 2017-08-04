@@ -33,8 +33,8 @@ class ViewController: UIViewController {
     
     private func configureContainerViewController() {
         headerViewController = PageContainerController()
-//        headerViewController.imagesName = ["login0", "login1", "login2"]
-//        headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
+        headerViewController.imagesName = ["0", "1", "2"]
+        headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
         
         headerViewController.delegate = self
         
