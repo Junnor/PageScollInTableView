@@ -53,7 +53,7 @@ class ViewController: UIViewController {
         
         if self.headerViewController.imagesName.count == 0 {
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                self.headerViewController.imagesName = ["0", "1", "2"]
+                self.headerViewController.imagesName = ["city", "wall", "castle"]
                 self.headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
                 
                 self.indicator?.stopAnimating()
@@ -69,7 +69,7 @@ class ViewController: UIViewController {
                                                        showTitle: true)
         headerViewController.delegate = self
 
-        headerViewController.imagesName = ["0", "1", "2"]
+        headerViewController.imagesName = ["city", "wall", "castle"]
         headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
         
         addChildViewController(headerViewController)
