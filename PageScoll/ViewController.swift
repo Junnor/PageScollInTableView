@@ -17,38 +17,75 @@ class ViewController: UIViewController {
             tableView.dataSource = self
             tableView.delegate = self
             
-            tableView.rowHeight = 77
+            tableView.rowHeight = 70
             tableView.sectionHeaderHeight = 50
         }
     }
-
+    
+    // MARK: - View controller lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         automaticallyAdjustsScrollViewInsets = false
         
+        loadTableHeaderView()
         
-        configureContainerViewController()
+        loadTableFooterView()
+        
+        showIndicatorIfNeeded()
     }
     
-    private func configureContainerViewController() {
-        headerViewController = PageContainerController(useTimerAnimation: false, allowedRecursive: false)
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        headerViewController.imagesName = ["0", "1", "2"]
-        headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
+        let frame = CGRect(x: 0, y: 0, width:view.bounds.size.width, height: 200)
         
-        headerViewController.delegate = self        
+        tableView.tableHeaderView?.frame = frame
         
-        addChildViewController(headerViewController)
+        print("dsfsf frame: \(frame)")
+
+        
+        if self.headerViewController.imagesName.count == 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                self.headerViewController.imagesName = ["0", "1", "2"]
+                self.headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
                 
-        var frame = UIScreen.main.bounds
-        frame.origin.y = 0
-        frame.size.height = 200
-        headerViewController.view.frame = frame
+                self.indicator?.stopAnimating()
+            }
+        }
+    }
+    
+    // MARK: - Helper
+    
+    private func loadTableHeaderView() {
+        headerViewController = PageContainerController(useTimer: true,
+                                                       recursive: true,
+                                                       showTitle: true)
+        headerViewController.delegate = self
+
+//        headerViewController.imagesName = ["0", "1", "2"]
+//        headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
+//        
+        addChildViewController(headerViewController)
         
+        
+        let frame = UIScreen.main.bounds
+        print("view .......frame: \(frame) ")
+        
+        
+        let bounds = CGRect(x: 0, y: 0, width: frame.width, height: 200)
+        
+        headerViewController.view.frame = bounds
         tableView.tableHeaderView = headerViewController.view
-        
+
+        headerViewController.didMove(toParentViewController: self)
+    }
+    
+    private func loadTableFooterView() {
         let footerView = UIView()
+        var frame = UIScreen.main.bounds
         frame.size.height = 100
         footerView.frame = frame
         let label = UILabel(frame: frame)
@@ -58,26 +95,7 @@ class ViewController: UIViewController {
         footerView.addSubview(label)
         footerView.backgroundColor = UIColor.lightGray
         tableView.tableFooterView = footerView
-
-        headerViewController.didMove(toParentViewController: self)
-        
-        showIndicatorIfNeeded()
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 7.0) {
-//            
-//            print("perfrom long long ago")
-//            
-//            self.headerViewController.imagesName = ["0", "1", "2"]
-//            self.headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
-//            
-//            self.indicator?.stopAnimating()
-//        }
-    }
-    
     
     private var indicator: UIActivityIndicatorView!
     private func showIndicatorIfNeeded() {
@@ -90,7 +108,7 @@ class ViewController: UIViewController {
             indicator.startAnimating()
         }
     }
-
+    
 }
 
 // MARK: - pageContainer delegate
@@ -105,6 +123,9 @@ extension ViewController: PageContainerControllerDelegate {
     }
     
 }
+
+// MARK: - Table view  dataSource
+
 extension ViewController: UITableViewDataSource {
     
     
@@ -126,13 +147,15 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "\(section) Header"
     }
-
+    
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         return "\(section) Footer"
     }
     
 }
+
+// MARK: - Table view  delegate
 
 extension ViewController: UITableViewDelegate {
     

@@ -19,8 +19,14 @@ class PageViewController: UIViewController {
 
     var allowedRecursive = true
     var useTimerAnimation = true
+    var isPageControllerValueChangeAvailable = false
     
-    var hidePageController = false
+    var hidePageController = false {
+        didSet {
+            pageController?.isHidden = hidePageController
+        }
+    }
+    
     var usePageTitle = false
     
     var imagesName: [String] = [] {
@@ -30,8 +36,7 @@ class PageViewController: UIViewController {
             }
             
             if imagesName.count > 0 && !configuredPageView {
-                print("initializerPageControlerAndPageView with imagesName")
-                initializerPageControlerAndPageView()
+                initializerPageView()
             }
         }
     }
@@ -39,8 +44,9 @@ class PageViewController: UIViewController {
     var pagesTitle: [String] = [] {
         didSet {
             if pagesTitle.count > 0 && imagesName.count > 0 && !configuredPageView {
-                print("initializerPageControlerAndPageView with pagesTitle")
-                initializerPageControlerAndPageView()
+                initializerPageView()
+                
+                numberOfPage = imagesName.count
             }
         }
     }
@@ -54,12 +60,16 @@ class PageViewController: UIViewController {
     private var pageControllerHeight: CGFloat = 50
     private var lastPageIndex = 0
     fileprivate var numberOfPage = 0
-        
-    // MARK: - View controller lifecycle    
+    private let timeInterval = 5.0
+    private let scrollAfterTime = 3.0
+
+    // MARK: - View controller lifecycle
     private var configuredPageView = false
     private var timer: Timer!
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        print("viewDidAppear frame: \(view.frame)")
         
         if imagesName.count > 0 {
             if !configuredPageView {
@@ -68,12 +78,13 @@ class PageViewController: UIViewController {
                 
                 setPageViewController()
                 setPageController()
+                
+                view.layoutIfNeeded()
             }
             
             
             if timer != nil && useTimerAnimation {
-                print("fire with viewDidAppear")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + scrollAfterTime, execute: {
                     self.fireTimer()
                 })
             }
@@ -92,15 +103,18 @@ class PageViewController: UIViewController {
     
     // MARK: Helper
     
-    private func initializerPageControlerAndPageView() {
+    private func initializerPageView() {
         configuredPageView = true
+        
+        numberOfPage = imagesName.count
         
         setPageViewController()
         setPageController()
+        
+        view.layoutIfNeeded()
 
-        print("fire with property")
         if useTimerAnimation {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + scrollAfterTime, execute: {
                 self.fireTimer()
             })
         }
@@ -109,7 +123,7 @@ class PageViewController: UIViewController {
     private func fireTimer() {
         timer?.invalidate()   // add it
         
-        timer = Timer.scheduledTimer(timeInterval: 3.0,
+        timer = Timer.scheduledTimer(timeInterval: timeInterval,
                                           target: self,
                                           selector: #selector(scrollToNextController),
                                           userInfo: nil,
@@ -126,8 +140,6 @@ class PageViewController: UIViewController {
         pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
         pageViewController.dataSource = self
         pageViewController.delegate = self
-        
-        numberOfPage = imagesName.count
         
         let startingContentViewController = contentViewController(at: 0)
         let viewControllers = [startingContentViewController!]
@@ -146,16 +158,25 @@ class PageViewController: UIViewController {
     
     private func setPageController() {
         
-        var frame = view.bounds
+        var frame = view.frame
+        
+        print("view.bounds: \(frame)")
+
         frame.origin.y = frame.height - 50
         frame.size.height = 50
+        frame.size.width = min(CGFloat(imagesName.count * 30), frame.width)
         pageController = UIPageControl(frame: frame)
+        pageController.center.x = view.center.x
+        
         pageController.numberOfPages = imagesName.count
+        
 
         pageController.pageIndicatorTintColor = UIColor.lightGray
         pageController.currentPageIndicatorTintColor = UIColor.black
         
-        pageController.addTarget(self, action: #selector(valueChangeAction), for: .valueChanged)
+        if isPageControllerValueChangeAvailable {
+            pageController.addTarget(self, action: #selector(valueChangeAction), for: .valueChanged)
+        }
         
         view.addSubview(pageController)
         view.bringSubview(toFront: pageController)
@@ -220,7 +241,7 @@ class PageViewController: UIViewController {
 extension PageViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-
+        
         if let vc = viewController as? PageContentViewController {
             var index = vc.pageIndex
             if index == NSNotFound { return nil }
@@ -246,7 +267,6 @@ extension PageViewController: UIPageViewControllerDataSource, UIPageViewControll
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-
         if let vc = viewController as? PageContentViewController {
             var index = vc.pageIndex
             if index == NSNotFound { return nil }
@@ -272,6 +292,7 @@ extension PageViewController: UIPageViewControllerDataSource, UIPageViewControll
         return nil
     }
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        
         let firstPageContentViewController = pendingViewControllers.first as? PageContentViewController
         if firstPageContentViewController != nil {
             let index = firstPageContentViewController!.pageIndex

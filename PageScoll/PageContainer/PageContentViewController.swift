@@ -55,7 +55,6 @@ class PageContentViewController: UIViewController {
         view.addSubview(imageView)
         if imageFile != nil {
             imageView.image = UIImage(named: imageFile!)
-            imageView.contentMode = .center
         }
     }
     

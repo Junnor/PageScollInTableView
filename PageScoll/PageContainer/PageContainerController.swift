@@ -14,11 +14,17 @@ protocol PageContainerControllerDelegate: class {
 
 class PageContainerController: UIViewController {
     
-    init(useTimerAnimation: Bool, allowedRecursive: Bool) {
+    /*
+     useTimer: 是否允许循环滚动
+     recursive: 是否允许自动滚动
+     showTitle: 是否显示标题
+     */
+    init(useTimer: Bool, recursive: Bool, showTitle: Bool) {
         super.init(nibName: nil, bundle: nil)
         
-        self.useTimerAnimation = useTimerAnimation
-        self.allowedRecursive = allowedRecursive
+        self.useTimerAnimation = useTimer
+        self.allowedRecursive = recursive
+        self.usePageTitle = showTitle
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -26,42 +32,58 @@ class PageContainerController: UIViewController {
     }
     
     // MARK: - Public
-
-    var hidePageController = false {
-        didSet {
-            pageViewController?.hidePageController = hidePageController
-        }
-    }
     
-    var usePageTitle = false {
-        didSet {
-            pageViewController?.usePageTitle = usePageTitle
-        }
-    }
-
+    weak var delegate: PageContainerControllerDelegate?
+    
+    // 图片文件数组
     var imagesName: [String] = [] {
         didSet {
             pageViewController?.imagesName = imagesName
         }
     }
+    
+    // 标题数组
     var pagesTitle: [String] = [] {
         didSet {
             pageViewController?.pagesTitle = pagesTitle
         }
     }
     
-    weak var delegate: PageContainerControllerDelegate?
+    // 隐藏 pageController [滚动的小点点]， 默认显示
+    var hidePageController = false {
+        didSet {
+            pageViewController?.hidePageController = hidePageController
+        }
+    }
 
+    // 点击 pageController 小点点 的事件响应， 默认不允许
+    var isPageControllerValueChangeAvailable = false {
+        didSet {
+            pageViewController?.isPageControllerValueChangeAvailable = isPageControllerValueChangeAvailable
+        }
+    }
+
+    
     // MARK: Private
     
+    // 允许循环滚动， 默认允许
     private var allowedRecursive = true {
         didSet {
             pageViewController?.allowedRecursive = allowedRecursive
         }
     }
+    
+    // 允许自动滚动，默认允许
     private var useTimerAnimation = true {
         didSet {
             pageViewController?.useTimerAnimation = useTimerAnimation
+        }
+    }
+    
+    // 使用标题，默认不显示
+    private var usePageTitle = false {
+        didSet {
+            pageViewController?.usePageTitle = usePageTitle
         }
     }
     
@@ -71,18 +93,21 @@ class PageContainerController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("cccccc viewDidLoad frame: \(view.frame)")
         
         pageViewController = PageViewController()
         pageViewController.delegate = self
         
         addChildViewController(pageViewController)
+        pageViewController.view.frame = view.bounds
         view.addSubview(pageViewController.view)
         pageViewController.didMove(toParentViewController: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+        print("cccccc viewDidAppear frame: \(view.frame)")
+
         pageViewController?.allowedRecursive = self.allowedRecursive
         pageViewController?.hidePageController = self.hidePageController
         pageViewController?.useTimerAnimation = self.useTimerAnimation
