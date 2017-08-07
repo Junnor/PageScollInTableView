@@ -36,16 +36,16 @@ class PageContainerController: UIViewController {
     weak var delegate: PageContainerControllerDelegate?
     
     // 图片文件数组
-    var imagesName: [String] = [] {
+    var pageImageFiles: [String] = [] {
         didSet {
-            pageViewController?.imagesName = imagesName
+            pageViewController?.pageImageFiles = pageImageFiles
         }
     }
     
     // 标题数组
-    var pagesTitle: [String] = [] {
+    var pageTitles: [String] = [] {
         didSet {
-            pageViewController?.pagesTitle = pagesTitle
+            pageViewController?.pageTitles = pageTitles
         }
     }
     
@@ -117,8 +117,8 @@ class PageContainerController: UIViewController {
             pageViewController?.useTimerAnimation = self.useTimerAnimation
             pageViewController?.usePageTitle = usePageTitle
             
-            pageViewController?.imagesName = self.imagesName
-            pageViewController?.pagesTitle = self.pagesTitle
+            pageViewController?.pageImageFiles = self.pageImageFiles
+            pageViewController?.pageTitles = self.pageTitles
         }
     }
     

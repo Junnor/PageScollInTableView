@@ -33,24 +33,24 @@ class PageViewController: UIViewController {
  
      之所以 imagesName & pagesTitle 这样出来是因为图片可能通过网络加载
      */
-    var imagesName: [String] = [] {
+    var pageImageFiles: [String] = [] {
         didSet {
-            if usePageTitle && pagesTitle.count == 0 {  // 判断是否使用标题
+            if usePageTitle && pageTitles.count == 0 {  // 判断是否使用标题
                 return
             }
             
-            if imagesName.count > 0 && !configuredPageView {
+            if pageImageFiles.count > 0 && !configuredPageView {
                 initializerPageView()
             }
         }
     }
     
-    var pagesTitle: [String] = [] {
+    var pageTitles: [String] = [] {
         didSet {
-            if pagesTitle.count > 0 && imagesName.count > 0 && !configuredPageView {
+            if pageTitles.count > 0 && pageImageFiles.count > 0 && !configuredPageView {
                 initializerPageView()
                 
-                numberOfPage = imagesName.count
+                numberOfPage = pageImageFiles.count
             }
         }
     }
@@ -72,7 +72,7 @@ class PageViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
                 
-        if imagesName.count > 0 {
+        if pageImageFiles.count > 0 {
             if !configuredPageView {
                 
                 configuredPageView = true
@@ -107,7 +107,7 @@ class PageViewController: UIViewController {
     private func initializerPageView() {
         configuredPageView = true
         
-        numberOfPage = imagesName.count
+        numberOfPage = pageImageFiles.count
         
         setPageViewController()
         setPageController()
@@ -161,11 +161,11 @@ class PageViewController: UIViewController {
         var frame = view.frame
         frame.origin.y = frame.height - 50
         frame.size.height = 50
-        frame.size.width = min(CGFloat(imagesName.count * 30), frame.width)
+        frame.size.width = min(CGFloat(pageImageFiles.count * 30), frame.width)
         pageController = UIPageControl(frame: frame)
         pageController.center.x = view.center.x
         
-        pageController.numberOfPages = imagesName.count
+        pageController.numberOfPages = pageImageFiles.count
         
 
         pageController.pageIndicatorTintColor = UIColor.lightGray
@@ -224,10 +224,10 @@ class PageViewController: UIViewController {
         contentViewControllr.delegate = self
         
         contentViewControllr.pageIndex = index
-        contentViewControllr.imageFile = imagesName[index]
+        contentViewControllr.imageFile = pageImageFiles[index]
         
         if usePageTitle {   // may not using page title
-            contentViewControllr.pageTitle = pagesTitle[index]
+            contentViewControllr.pageTitle = pageTitles[index]
         }
         
         return contentViewControllr

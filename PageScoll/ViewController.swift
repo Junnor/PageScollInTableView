@@ -51,10 +51,10 @@ class ViewController: UIViewController {
             showIndicatorIfNeeded()
         }
         
-        if self.headerViewController.imagesName.count == 0 {
+        if self.headerViewController.pageImageFiles.count == 0 {
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                self.headerViewController.imagesName = ["city", "wall", "castle"]
-                self.headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
+                self.headerViewController.pageImageFiles = ["city", "wall", "castle"]
+                self.headerViewController.pageTitles = ["Page 0", "Page 1", "Page 2"]
                 
                 self.indicator?.stopAnimating()
             }
@@ -63,14 +63,17 @@ class ViewController: UIViewController {
     
     // MARK: - Helper
     
+    private let loadImmediately = false     // For test
     private func loadTableHeaderView() {
         headerViewController = PageContainerController(useTimer: true,
                                                        recursive: true,
                                                        showTitle: true)
         headerViewController.delegate = self
 
-        headerViewController.imagesName = ["city", "wall", "castle"]
-        headerViewController.pagesTitle = ["Page 0", "Page 1", "Page 2"]
+        if loadImmediately {
+            headerViewController.pageImageFiles = ["city", "wall", "castle"]
+            headerViewController.pageTitles = ["Page 0", "Page 1", "Page 2"]
+        }
         
         addChildViewController(headerViewController)
         
@@ -93,7 +96,7 @@ class ViewController: UIViewController {
     
     private var indicator: UIActivityIndicatorView!
     private func showIndicatorIfNeeded() {
-        if headerViewController.imagesName.count == 0 {
+        if headerViewController.pageImageFiles.count == 0 {
             indicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
             indicator.center = tableView.tableHeaderView!.center
             tableView.tableHeaderView?.addSubview(indicator)
